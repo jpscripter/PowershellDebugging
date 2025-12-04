@@ -1,4 +1,4 @@
-Set-Location C:\Debugging
+Set-Location C:\PowershellDebugging
 
 #Transcript example
 
@@ -20,7 +20,7 @@ start-process -FilePath (Where.exe notepad)[0] -ArgumentList "$env:temp\DebugTra
 
 
 
-
+<#
 #Trace Example
 Set-PSDebug -Trace 2
 $MaxLoops = 10
@@ -34,3 +34,6 @@ $BreakPoint = 3
     #Inspect Module
     start-sleep –seconds 1
 }
+    
+Set-PSDebug -off
+#>

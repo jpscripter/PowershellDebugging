@@ -1,39 +1,29 @@
-$FilePath = "C:\RunSpaceData.txt"
-$RunSpaceData = @{
-    Computername = $ENV:COMPUTERNAME
-    PID          = $PID
-    RunSpace     = [Runspace]::DefaultRunspace.id
-}
-Out-File -FilePath $FilePath -InputObject (Convertto-json $RunSpaceData)
-#Wait
-$Seconds = 300
-For ($Counter = 0; $Counter -lt $Seconds; $Counter++) {
-    Start-Sleep -Seconds 1 
-}
+Start-process Powershell.exe -ArgumentList "-file C:\PowershellDebugging\5-RemoteScript.ps1" -WindowStyle Normal
+start-sleep -Seconds 5 
 
-
-
-#Run from your IDE such as the ISE
 # Entering The Runspace
 whoami.exe
-$FilePath = "C:\RunSpaceData.txt"
+$FilePath = "C:\PowershellDebugging\RunSpaceData.txt"
 $Content = Get-Content -Path $FilePath -Raw
 $RunSpaceData = ConvertFrom-Json -InputObject $content
+$RunSpaceData
+
+#Connect to remote computer then runspace
 If ($RunSpaceData.ComputerName -NE $ENV:COMPUTERNAME) {
     $PSSession = Enter-PSSession -ComputerName $RunSpaceData.ComputerName
     Invoke-Command -ScriptBlock { Enter-PSHostProcess -ID $args } -ArgumentList $RunSpaceData.PID -Session $PSSession
-    "Debug-Runspace -id $($RunSpaceData.RunSpace)" | clip
-}
-Else {
-    $RunSpaceData
+}else{
     Enter-PSHostProcess -ID $RunSpaceData.PID
-    #get-Runspace
-    "Debug-Runspace -ID $($RunSpaceData.RunSpace)" | clip
 }
-# ? or h for help
+"Debug-Runspace -ID $($RunSpaceData.RunSpace)" | clip
+
+
+
 
 #List powershell processes
-Get-PSHostProcessInfo
-
 #Enter different powershell process
 #If running as a different user, This requires admin rights
+
+Get-PSHostProcessInfo
+Enter-PSHostProcess -ID $RunSpaceData.PID
+get-runspace
